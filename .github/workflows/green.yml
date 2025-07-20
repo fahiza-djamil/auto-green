@@ -2,8 +2,11 @@ name: Auto Green Commit
 
 on:
   schedule:
-    - cron: '0 3 * * *' 
+    - cron: '0 3 * * *'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   green:
@@ -13,18 +16,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Git identity
+      - name: Set Git identity
         run: |
           git config user.name "green-bot"
           git config user.email "bot@example.com"
 
-      - name: Make a change to trigger commit
-        run: |
-          echo "Updated on $(date)" >> activity.log
+      - name: Update activity.log
+        run: echo "Updated on $(date)" >> activity.log
 
-      - name: Commit and push changes
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit & push
         run: |
           git add activity.log
           git commit -m "chore: auto green commit 🌱" || echo "No changes to commit"
