@@ -1,0 +1,25 @@
+name: Auto Green Commit
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  
+  workflow_dispatch:     
+
+jobs:
+  green:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Update activity log
+        run: |
+          echo "Update: $(date)" >> activity.log
+
+      - name: Commit changes
+        run: |
+          git config --global user.name 'green-bot'
+          git config --global user.email 'bot@example.com'
+          git add activity.log
+          git commit -m "chore: auto green commit 🌱" || echo "No changes to commit"
+          git push
