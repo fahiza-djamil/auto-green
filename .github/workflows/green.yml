@@ -21,26 +21,23 @@ jobs:
           git config user.name "green-bot"
           git config user.email "bot@example.com"
 
-      - name: Update activity.log (max 10 lines, WIB format)
+      - name: Update activity.log & commit
         run: |
+          # Set zona waktu ke Asia/Jakarta
           export TZ="Asia/Jakarta"
-          LOG_FILE="activity.log"
-          TIMESTAMP=$(date +"%A, %d %B %Y %H:%M:%S WIB")
-          echo "Updated on $TIMESTAMP." >> $LOG_FILE
-          tail -n 10 $LOG_FILE > temp.log && mv temp.log $LOG_FILE
 
-      - name: Commit & push with dual format
-        run: |
-          export TZ="Asia/Jakarta"
-          
-          # Format English (ex: July 23, 2025, 13:21:48 PM UTC+7)
-          EN_DATE=$(date +"%B %d, %Y, %H:%M:%S PM UTC+7")
+          # Ambil waktu sekarang dalam dua format
+          UTC7_DATE_EN=$(date +"%B %d, %Y, %I:%M:%S %p UTC+7")
+          UTC7_DATE_ID=$(LC_TIME=id_ID.UTF-8 date +"%d %B %Y, %H:%M:%S WIB")
 
-          # Format Indonesia (ex: 23 Juli 2025, 13:21:48 WIB)
-          ID_DATE=$(LC_TIME=id_ID.UTF-8 date +"%d %B %Y, %H:%M:%S WIB")
+          # Gabungkan ke dalam satu pesan
+          COMMIT_MSG="Auto green commit 🌱 at $UTC7_DATE_EN or $UTC7_DATE_ID."
 
-          COMMIT_MSG="Auto green commit 🌱 at $EN_DATE or $ID_DATE."
+          # Update activity.log (maks 10 baris)
+          echo "$COMMIT_MSG" >> activity.log
+          tail -n 10 activity.log > temp.log && mv temp.log activity.log
 
+          # Commit & push
           git config user.name "fahiza-djamil"
           git config user.email "fahizadjamil@gmail.com"
           git add activity.log
