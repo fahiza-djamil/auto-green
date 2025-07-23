@@ -24,16 +24,25 @@ jobs:
       - name: Update activity.log (max 10 lines, WIB format)
         run: |
           export TZ="Asia/Jakarta"
-          TIMESTAMP=$(date +"%A, %d %B %Y %H:%M:%S %Z")
           LOG_FILE="activity.log"
-
+          TIMESTAMP=$(date +"%A, %d %B %Y %H:%M:%S WIB")
           echo "Updated on $TIMESTAMP." >> $LOG_FILE
           tail -n 10 $LOG_FILE > temp.log && mv temp.log $LOG_FILE
 
-      - name: Commit & push
+      - name: Commit & push with dual format
         run: |
+          export TZ="Asia/Jakarta"
+          
+          # Format English (ex: July 23, 2025, 13:21:48 PM UTC+7)
+          EN_DATE=$(date +"%B %d, %Y, %H:%M:%S PM UTC+7")
+
+          # Format Indonesia (ex: 23 Juli 2025, 13:21:48 WIB)
+          ID_DATE=$(LC_TIME=id_ID.UTF-8 date +"%d %B %Y, %H:%M:%S WIB")
+
+          COMMIT_MSG="Auto green commit 🌱 at $EN_DATE or $ID_DATE."
+
           git config user.name "fahiza-djamil"
           git config user.email "fahizadjamil@gmail.com"
           git add activity.log
-          git commit -m "chore: auto green commit 🌱 at $(TZ='Asia/Jakarta' date '+%Y-%m-%d %H:%M:%S WIB')" || echo "No changes to commit"
+          git commit -m "$COMMIT_MSG" || echo "No changes to commit"
           git push origin HEAD
