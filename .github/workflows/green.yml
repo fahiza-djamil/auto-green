@@ -2,7 +2,7 @@ name: Auto Green Commit
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Setiap 6 jam: jam 0, 6, 12, 18 UTC
+    - cron: '0 */6 * * *'
   workflow_dispatch:
 
 permissions:
@@ -21,13 +21,19 @@ jobs:
           git config user.name "green-bot"
           git config user.email "bot@example.com"
 
-      - name: Update activity.log
-        run: echo "Updated on $(date -u)" >> activity.log
+      - name: Update activity.log (max 10 lines, WIB format)
+        run: |
+          export TZ="Asia/Jakarta"
+          TIMESTAMP=$(date +"%A, %d %B %Y %H:%M:%S %Z")
+          LOG_FILE="activity.log"
+
+          echo "Updated on $TIMESTAMP." >> $LOG_FILE
+          tail -n 10 $LOG_FILE > temp.log && mv temp.log $LOG_FILE
 
       - name: Commit & push
         run: |
           git config user.name "fahiza-djamil"
           git config user.email "fahizadjamil@gmail.com"
           git add activity.log
-          git commit -m "chore: auto green commit 🌱 at $(date -u '+%Y-%m-%d %H:%M:%S UTC')" || echo "No changes to commit"
+          git commit -m "chore: auto green commit 🌱 at $(TZ='Asia/Jakarta' date '+%Y-%m-%d %H:%M:%S WIB')" || echo "No changes to commit"
           git push origin HEAD
