@@ -41,5 +41,5 @@ jobs:
           git config user.name "fahiza-djamil"
           git config user.email "fahizadjamil@gmail.com"
           git add activity.log
-          git commit -m "$COMMIT_MSG" || echo "No changes to commit"
+          git commit -m "Auto green commit 🌱" || echo "No changes to commit"
           git push origin HEAD
